@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgendaFácil - Sistema de Agendamento Online</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-sm">A</span>
+                    </div>
+                    <span class="text-xl font-semibold text-gray-900">AgendaFácil</span>
+                </div>
+                <button id="loginBtn" class="text-blue-600 hover:text-blue-700 font-medium">
+                    Área da Empresa
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Current Screen Display -->
+        <div id="currentScreen" class="text-center mb-8">
+            <div class="inline-flex items-center space-x-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium">
+                <span id="screenIndicator">Tela 1: Página Pública</span>
+            </div>
+        </div>
+
+        <!-- Screen 1: Public Booking Page -->
+        <div id="screen1" class="screen">
+            <!-- Company Header -->
+            <div class="text-center mb-12">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Salão Beleza & Estilo</h1>
+                <p class="text-gray-600">Agende seu horário de forma rápida e prática</p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-12">
+                <!-- Services Section -->
+                <div>
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-6">Nossos Serviços</h2>
+                    <div class="space-y-4">
+                        <div class="service-card bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer" data-service="Corte Feminino" data-duration="45 min" data-price="R$ 80">
+                            <h3 class="font-semibold text-gray-900 mb-2">Corte Feminino</h3>
+                            <p class="text-gray-600 text-sm mb-3">Corte personalizado com lavagem e finalização</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-blue-600 font-medium">45 min</span>
+                                <span class="text-gray-900 font-semibold">R$ 80</span>
+                            </div>
+                        </div>
+                        
+                        <div class="service-card bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer" data-service="Coloração" data-duration="2h" data-price="R$ 150">
+                            <h3 class="font-semibold text-gray-900 mb-2">Coloração</h3>
+                            <p class="text-gray-600 text-sm mb-3">Tintura completa com produtos de qualidade</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-blue-600 font-medium">2h</span>
+                                <span class="text-gray-900 font-semibold">R$ 150</span>
+                            </div>
+                        </div>
+                        
+                        <div class="service-card bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer" data-service="Manicure" data-duration="30 min" data-price="R$ 35">
+                            <h3 class="font-semibold text-gray-900 mb-2">Manicure</h3>
+                            <p class="text-gray-600 text-sm mb-3">Cuidado completo das unhas das mãos</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-blue-600 font-medium">30 min</span>
+                                <span class="text-gray-900 font-semibold">R$ 35</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Booking Section -->
+                <div>
+                    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                        <h2 class="text-2xl font-semibold text-gray-900 mb-6">Agendar Horário</h2>
+                        
+                        <!-- Selected Service -->
+                        <div id="selectedService" class="hidden mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-medium text-blue-900" id="selectedServiceName">Serviço Selecionado</h4>
+                                    <p class="text-blue-700 text-sm" id="selectedServiceDetails">Duração e preço</p>
+                                </div>
+                                <button id="changeService" class="text-blue-600 hover:text-blue-700 text-sm font-medium">Alterar</button>
+                            </div>
+                        </div>
+
+                        <!-- Calendar -->
+                        <div class="mb-6">
+                            <h3 class="font-medium text-gray-900 mb-3">Escolha a data</h3>
+                            <div class="grid grid-cols-7 gap-1 mb-4">
+                                <div class="text-center text-sm font-medium text-gray-500 py-2">Dom</div>
+                                <div class="text-center text-sm font-medium text-gray-500 py-2">Seg</div>
+                                <div class="text-center text-sm font-medium text-gray-500 py-2">Ter</div>
+                                <div class="text-center text-sm font-medium text-gray-500 py-2">Qua</div>
+                                <div class="text-center text-sm font-medium text-gray-500 py-2">Qui</div>
+                                <div class="text-center text-sm font-medium text-gray-500 py-2">Sex</div>
+                                <div class="text-center text-sm font-medium text-gray-500 py-2">Sáb</div>
+                            </div>
+                            <div class="grid grid-cols-7 gap-1" id="calendar">
+                                <!-- Calendar days will be generated by JavaScript -->
+                            </div>
+                        </div>
+
+                        <!-- Time Slots -->
+                        <div class="mb-6" id="timeSlots" style="display: none;">
+                            <h3 class="font-medium text-gray-900 mb-3">Horários disponíveis</h3>
+                            <div class="grid grid-cols-3 gap-2" id="timeGrid">
+                                <!-- Time slots will be generated by JavaScript -->
+                            </div>
+                        </div>
+
+                        <!-- Booking Form -->
+                        <form id="bookingForm" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Nome completo</label>
+                                <input type="text" id="clientName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                <input type="email" id="clientEmail" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+                                <input type="tel" id="clientPhone" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                            </div>
+                            <button type="submit" id="confirmBooking" class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed" disabled>
+                                Confirmar Agendamento
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 2: Login/Register -->
+        <div id="screen2" class="screen hidden">
+            <div class="max-w-md mx-auto">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Área da Empresa</h1>
+                    <p class="text-gray-600">Faça login ou cadastre sua empresa</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+                    <!-- Login/Register Toggle -->
+                    <div class="flex mb-6 bg-gray-100 rounded-lg p-1">
+                        <button id="loginTab" class="flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors bg-white text-gray-900 shadow-sm">
+                            Login
+                        </button>
+                        <button id="registerTab" class="flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors text-gray-500 hover:text-gray-700">
+                            Cadastro
+                        </button>
+                    </div>
+
+                    <!-- Login Form -->
+                    <form id="loginForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <input type="email" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+                            <input type="password" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                            Entrar
+                        </button>
+                    </form>
+
+                    <!-- Register Form -->
+                    <form id="registerForm" class="space-y-4 hidden">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+                            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nome da Empresa</label>
+                            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <input type="email" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+                            <input type="password" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                            Criar Conta
+                        </button>
+                    </form>
+                </div>
+
+                <div class="text-center mt-6">
+                    <button id="backToPublic" class="text-blue-600 hover:text-blue-700 font-medium">
+                        ← Voltar para página pública
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 3: Dashboard -->
+        <div id="screen3" class="screen hidden">
+            <div class="flex">
+                <!-- Sidebar -->
+                <div class="w-64 bg-white rounded-xl shadow-sm border border-gray-100 p-6 mr-8">
+                    <div class="flex items-center space-x-3 mb-8">
+                        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                            <span class="text-white font-bold text-sm">A</span>
+                        </div>
+                        <span class="text-xl font-semibold text-gray-900">AgendaFácil</span>
+                    </div>
+                    
+                    <nav class="space-y-2">
+                        <a href="#" id="dashboardNav" class="flex items-center space-x-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-700 font-medium">
+                            <span>📊</span>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="#" id="scheduleNav" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                            <span>📅</span>
+                            <span>Agenda</span>
+                        </a>
+                        <a href="#" id="servicesNav" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                            <span>✂️</span>
+                            <span>Meus Serviços</span>
+                        </a>
+                        <a href="#" id="subscriptionNav" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                            <span>💳</span>
+                            <span>Assinatura</span>
+                        </a>
+                        <a href="#" id="settingsNav" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                            <span>⚙️</span>
+                            <span>Configurações</span>
+                        </a>
+                    </nav>
+
+                    <div class="mt-8 pt-8 border-t border-gray-200">
+                        <button id="logoutBtn" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 w-full">
+                            <span>🚪</span>
+                            <span>Sair</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="flex-1">
+                    <div class="mb-8">
+                        <h1 class="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
+                        <p class="text-gray-600">Visão geral dos seus agendamentos</p>
+                    </div>
+
+                    <!-- Summary Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">Agendamentos Hoje</p>
+                                    <p class="text-3xl font-bold text-gray-900">8</p>
+                                </div>
+                                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <span class="text-blue-600 text-xl">📅</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">Próximo Cliente</p>
+                                    <p class="text-lg font-semibold text-gray-900">Maria Silva</p>
+                                    <p class="text-sm text-gray-500">14:30 - Corte Feminino</p>
+                                </div>
+                                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <span class="text-green-600 text-xl">👤</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">Receita do Mês</p>
+                                    <p class="text-3xl font-bold text-gray-900">R$ 3.240</p>
+                                </div>
+                                <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                    <span class="text-yellow-600 text-xl">💰</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Acesso Rápido</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <button class="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                                <span class="text-2xl">✂️</span>
+                                <div class="text-left">
+                                    <p class="font-medium text-gray-900">Meus Serviços</p>
+                                    <p class="text-sm text-gray-500">Gerenciar serviços oferecidos</p>
+                                </div>
+                            </button>
+                            
+                            <button class="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                                <span class="text-2xl">📅</span>
+                                <div class="text-left">
+                                    <p class="font-medium text-gray-900">Agenda</p>
+                                    <p class="text-sm text-gray-500">Ver todos os agendamentos</p>
+                                </div>
+                            </button>
+                            
+                            <button class="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                                <span class="text-2xl">⚙️</span>
+                                <div class="text-left">
+                                    <p class="font-medium text-gray-900">Configurações</p>
+                                    <p class="text-sm text-gray-500">Ajustar horários e dados</p>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 4: Schedule -->
+        <div id="screen4" class="screen hidden">
+            <div class="flex">
+                <!-- Sidebar (same as dashboard) -->
+                <div class="w-64 bg-white rounded-xl shadow-sm border border-gray-100 p-6 mr-8">
+                    <div class="flex items-center space-x-3 mb-8">
+                        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                            <span class="text-white font-bold text-sm">A</span>
+                        </div>
+                        <span class="text-xl font-semibold text-gray-900">AgendaFácil</span>
+                    </div>
+                    
+                    <nav class="space-y-2">
+                        <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                            <span>📊</span>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-700 font-medium">
+                            <span>📅</span>
+                            <span>Agenda</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                            <span>✂️</span>
+                            <span>Meus Serviços</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                            <span>💳</span>
+                            <span>Assinatura</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                            <span>⚙️</span>
+                            <span>Configurações</span>
+                        </a>
+                    </nav>
+                </div>
+
+                <!-- Schedule Content -->
+                <div class="flex-1">
+                    <div class="mb-8">
+                        <h1 class="text-3xl font-bold text-gray-900 mb-2">Agenda</h1>
+                        <p class="text-gray-600">Visualize e gerencie seus agendamentos</p>
+                    </div>
+
+                    <!-- Calendar Header -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 mb-6">
+                        <div class="p-6 border-b border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <h2 class="text-xl font-semibold text-gray-900">Segunda, 15 de Janeiro 2024</h2>
+                                <div class="flex items-center space-x-2">
+                                    <button class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+                                        <span>←</span>
+                                    </button>
+                                    <button class="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg">
+                                        Hoje
+                                    </button>
+                                    <button class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+                                        <span>→</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Time Slots -->
+                        <div class="p-6">
+                            <div class="space-y-2">
+                                <!-- 9:00 -->
+                                <div class="flex items-center">
+                                    <div class="w-16 text-sm text-gray-500 font-medium">9:00</div>
+                                    <div class="flex-1 h-12 border border-gray-200 rounded-lg bg-gray-50"></div>
+                                </div>
+                                
+                                <!-- 10:00 -->
+                                <div class="flex items-center">
+                                    <div class="w-16 text-sm text-gray-500 font-medium">10:00</div>
+                                    <div class="flex-1 h-12 border border-blue-200 rounded-lg bg-blue-100 flex items-center px-4">
+                                        <div>
+                                            <p class="font-medium text-blue-900">Ana Costa - Corte Feminino</p>
+                                            <p class="text-sm text-blue-700">45 min • R$ 80</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 11:00 -->
+                                <div class="flex items-center">
+                                    <div class="w-16 text-sm text-gray-500 font-medium">11:00</div>
+                                    <div class="flex-1 h-12 border border-gray-200 rounded-lg bg-gray-50"></div>
+                                </div>
+                                
+                                <!-- 12:00 -->
+                                <div class="flex items-center">
+                                    <div class="w-16 text-sm text-gray-500 font-medium">12:00</div>
+                                    <div class="flex-1 h-12 border border-gray-200 rounded-lg bg-gray-50"></div>
+                                </div>
+                                
+                                <!-- 13:00 -->
+                                <div class="flex items-center">
+                                    <div class="w-16 text-sm text-gray-500 font-medium">13:00</div>
+                                    <div class="flex-1 h-12 border border-gray-200 rounded-lg bg-gray-50"></div>
+                                </div>
+                                
+                                <!-- 14:00 -->
+                                <div class="flex items-center">
+                                    <div class="w-16 text-sm text-gray-500 font-medium">14:00</div>
+                                    <div class="flex-1 h-12 border border-blue-200 rounded-lg bg-blue-100 flex items-center px-4">
+                                        <div>
+                                            <p class="font-medium text-blue-900">Maria Silva - Coloração</p>
+                                            <p class="text-sm text-blue-700">2h • R$ 150</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 15:00 -->
+                                <div class="flex items-center">
+                                    <div class="w-16 text-sm text-gray-500 font-medium">15:00</div>
+                                    <div class="flex-1 h-12 border border-blue-200 rounded-lg bg-blue-100 flex items-center px-4">
+                                        <div>
+                                            <p class="font-medium text-blue-900">Continuação - Maria Silva</p>
+                                            <p class="text-sm text-blue-700">Coloração</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 16:00 -->
+                                <div class="flex items-center">
+                                    <div class="w-16 text-sm text-gray-500 font-medium">16:00</div>
+                                    <div class="flex-1 h-12 border border-blue-200 rounded-lg bg-blue-100 flex items-center px-4">
+                                        <div>
+                                            <p class="font-medium text-blue-900">João Santos - Manicure</p>
+                                            <p class="text-sm text-blue-700">30 min • R$ 35</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 17:00 -->
+                                <div class="flex items-center">
+                                    <div class="w-16 text-sm text-gray-500 font-medium">17:00</div>
+                                    <div class="flex-1 h-12 border border-gray-200 rounded-lg bg-gray-50"></div>
+                                </div>
+                                
+                                <!-- 18:00 -->
+                                <div class="flex items-center">
+                                    <div class="w-16 text-sm text-gray-500 font-medium">18:00</div>
+                                    <div class="flex-1 h-12 border border-gray-200 rounded-lg bg-gray-50"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 5: Subscription -->
+        <div id="screen5" class="screen hidden">
+            <div class="flex">
+                <!-- Sidebar (same as dashboard) -->
+                <div class="w-64 bg-white rounded-xl shadow-sm border border-gray-100 p-6 mr-8">
+                    <div class="flex items-center space-x-3 mb-8">
+                        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                            <span class="text-white font-bold text-sm">A</span>
+                        </div>
+                        <span class="text-xl font-semibold text-gray-900">AgendaFácil</span>
+                    </div>
+                    
+                    <nav class="space-y-2">
+                        <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                            <span>📊</span>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                            <span>📅</span>
+                            <span>Agenda</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                            <span>✂️</span>
+                            <span>Meus Serviços</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-700 font-medium">
+                            <span>💳</span>
+                            <span>Assinatura</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                            <span>⚙️</span>
+                            <span>Configurações</span>
+                        </a>
+                    </nav>
+                </div>
+
+                <!-- Subscription Content -->
+                <div class="flex-1">
+                    <div class="mb-8">
+                        <h1 class="text-3xl font-bold text-gray-900 mb-2">Assinatura</h1>
+                        <p class="text-gray-600">Gerencie sua assinatura do AgendaFácil</p>
+                    </div>
+
+                    <!-- Subscription Card -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 max-w-2xl">
+                        <div class="text-center mb-8">
+                            <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <span class="text-yellow-600 text-2xl">⏳</span>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-900 mb-2">Sua Assinatura</h2>
+                            <div class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                                <span class="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
+                                Status: Pendente
+                            </div>
+                        </div>
+
+                        <div class="text-center mb-8">
+                            <p class="text-gray-600 mb-6">
+                                Para ativar sua conta e começar a receber agendamentos, envie o comprovante de pagamento via WhatsApp.
+                            </p>
+                            
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                                <h3 class="font-semibold text-blue-900 mb-2">Plano Mensal - R$ 29,90</h3>
+                                <p class="text-blue-700 text-sm">
+                                    • Agendamentos ilimitados<br>
+                                    • Página personalizada<br>
+                                    • Suporte via WhatsApp
+                                </p>
+                            </div>
+
+                            <button id="sendWhatsApp" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-4 px-8 rounded-lg transition-colors flex items-center justify-center space-x-2 mx-auto mb-4">
+                                <span>📱</span>
+                                <span>Enviar Comprovante via WhatsApp</span>
+                            </button>
+                            
+                            <p class="text-sm text-gray-500">
+                                Após a validação, sua conta será ativada automaticamente.
+                            </p>
+                        </div>
+
+                        <!-- Payment Instructions -->
+                        <div class="border-t border-gray-200 pt-6">
+                            <h3 class="font-semibold text-gray-900 mb-4">Dados para Pagamento</h3>
+                            <div class="bg-gray-50 rounded-lg p-4 space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">PIX:</span>
+                                    <span class="font-mono text-gray-900">contato@agendafacil.com</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Valor:</span>
+                                    <span class="font-semibold text-gray-900">R$ 29,90</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Banco:</span>
+                                    <span class="text-gray-900">Banco do Brasil - Ag: 1234 - CC: 56789-0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 6: Settings -->
+        <div id="screen6" class="screen hidden">
+            <div class="flex">
+                <!-- Sidebar (same as dashboard) -->
+                <div class="w-64 bg-white rounded-xl shadow-sm border border-gray-100 p-6 mr-8">
+                    <div class="flex items-center space-x-3 mb-8">
+                        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                            <span class="text-white font-bold text-sm">A</span>
+                        </div>
+                        <span class="text-xl font-semibold text-gray-900">AgendaFácil</span>
+                    </div>
+                    
+                    <nav class="space-y-2">
+                        <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                            <span>📊</span>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                            <span>📅</span>
+                            <span>Agenda</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                            <span>✂️</span>
+                            <span>Meus Serviços</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                            <span>💳</span>
+                            <span>Assinatura</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-700 font-medium">
+                            <span>⚙️</span>
+                            <span>Configurações</span>
+                        </a>
+                    </nav>
+                </div>
+
+                <!-- Settings Content -->
+                <div class="flex-1">
+                    <div class="mb-8">
+                        <h1 class="text-3xl font-bold text-gray-900 mb-2">Configurações</h1>
+                        <p class="text-gray-600">Gerencie as informações da sua empresa</p>
+                    </div>
+
+                    <div class="space-y-6">
+                        <!-- Company Information -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <h2 class="text-xl font-semibold text-gray-900 mb-6">Informações da Empresa</h2>
+                            <form id="companyForm" class="space-y-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Nome da Empresa</label>
+                                        <input type="text" value="Salão Beleza & Estilo" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Email de Contato</label>
+                                        <input type="email" value="contato@belezaestilo.com" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Telefone</label>
+                                        <input type="tel" value="(11) 99999-9999" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">WhatsApp</label>
+                                        <input type="tel" value="(11) 99999-9999" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Endereço Completo</label>
+                                    <input type="text" value="Rua das Flores, 123 - Centro - São Paulo/SP" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Descrição da Empresa</label>
+                                    <textarea rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">Salão de beleza especializado em cortes, coloração e cuidados com as unhas. Atendimento personalizado com profissionais qualificados.</textarea>
+                                </div>
+
+                                <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                                    Salvar Informações
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Business Hours -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <h2 class="text-xl font-semibold text-gray-900 mb-6">Horários de Funcionamento</h2>
+                            <form id="hoursForm" class="space-y-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Horário de Abertura</label>
+                                        <input type="time" value="09:00" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Horário de Fechamento</label>
+                                        <input type="time" value="18:00" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-3">Dias de Funcionamento</label>
+                                    <div class="grid grid-cols-7 gap-3">
+                                        <label class="flex flex-col items-center space-y-2 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                                            <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                            <span class="text-sm font-medium">Dom</span>
+                                        </label>
+                                        <label class="flex flex-col items-center space-y-2 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                                            <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                            <span class="text-sm font-medium">Seg</span>
+                                        </label>
+                                        <label class="flex flex-col items-center space-y-2 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                                            <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                            <span class="text-sm font-medium">Ter</span>
+                                        </label>
+                                        <label class="flex flex-col items-center space-y-2 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                                            <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                            <span class="text-sm font-medium">Qua</span>
+                                        </label>
+                                        <label class="flex flex-col items-center space-y-2 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                                            <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                            <span class="text-sm font-medium">Qui</span>
+                                        </label>
+                                        <label class="flex flex-col items-center space-y-2 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                                            <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                            <span class="text-sm font-medium">Sex</span>
+                                        </label>
+                                        <label class="flex flex-col items-center space-y-2 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                                            <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                            <span class="text-sm font-medium">Sáb</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Intervalo de Almoço (Início)</label>
+                                        <input type="time" value="12:00" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Intervalo de Almoço (Fim)</label>
+                                        <input type="time" value="13:00" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                                    Salvar Horários
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Services Management -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <h2 class="text-xl font-semibold text-gray-900">Meus Serviços</h2>
+                                <button id="addServiceBtn" class="bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                                    + Adicionar Serviço
+                                </button>
+                            </div>
+
+                            <div class="space-y-4" id="servicesList">
+                                <!-- Service 1 -->
+                                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                                    <div class="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4">
+                                        <input type="text" value="Corte Feminino" placeholder="Nome do serviço" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <input type="text" value="45 min" placeholder="Duração" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <input type="text" value="R$ 80" placeholder="Preço" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <input type="text" value="Corte personalizado com lavagem" placeholder="Descrição" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                    <button class="ml-4 text-red-600 hover:text-red-700 p-2">🗑️</button>
+                                </div>
+
+                                <!-- Service 2 -->
+                                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                                    <div class="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4">
+                                        <input type="text" value="Coloração" placeholder="Nome do serviço" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <input type="text" value="2h" placeholder="Duração" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <input type="text" value="R$ 150" placeholder="Preço" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <input type="text" value="Tintura completa com produtos de qualidade" placeholder="Descrição" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                    <button class="ml-4 text-red-600 hover:text-red-700 p-2">🗑️</button>
+                                </div>
+
+                                <!-- Service 3 -->
+                                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                                    <div class="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4">
+                                        <input type="text" value="Manicure" placeholder="Nome do serviço" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <input type="text" value="30 min" placeholder="Duração" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <input type="text" value="R$ 35" placeholder="Preço" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <input type="text" value="Cuidado completo das unhas das mãos" placeholder="Descrição" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                    <button class="ml-4 text-red-600 hover:text-red-700 p-2">🗑️</button>
+                                </div>
+                            </div>
+
+                            <div class="mt-6">
+                                <button type="button" class="bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                                    Salvar Serviços
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Booking Settings -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <h2 class="text-xl font-semibold text-gray-900 mb-6">Configurações de Agendamento</h2>
+                            <form id="bookingSettingsForm" class="space-y-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Antecedência Mínima</label>
+                                        <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                            <option>30 minutos</option>
+                                            <option selected>1 hora</option>
+                                            <option>2 horas</option>
+                                            <option>1 dia</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Antecedência Máxima</label>
+                                        <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                            <option>7 dias</option>
+                                            <option>15 dias</option>
+                                            <option selected>30 dias</option>
+                                            <option>60 dias</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Intervalo entre Agendamentos</label>
+                                        <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                            <option>Sem intervalo</option>
+                                            <option selected>15 minutos</option>
+                                            <option>30 minutos</option>
+                                            <option>1 hora</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Máximo de Agendamentos por Dia</label>
+                                        <input type="number" value="10" min="1" max="50" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                </div>
+
+                                <div class="space-y-4">
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                        <span class="text-sm font-medium text-gray-700">Permitir cancelamento pelo cliente</span>
+                                    </label>
+                                    
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                        <span class="text-sm font-medium text-gray-700">Enviar confirmação por email</span>
+                                    </label>
+                                    
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                        <span class="text-sm font-medium text-gray-700">Enviar lembrete 1 dia antes</span>
+                                    </label>
+                                    
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                        <span class="text-sm font-medium text-gray-700">Exigir telefone no agendamento</span>
+                                    </label>
+                                </div>
+
+                                <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                                    Salvar Configurações
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Account Settings -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <h2 class="text-xl font-semibold text-gray-900 mb-6">Configurações da Conta</h2>
+                            <form id="accountForm" class="space-y-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Email de Login</label>
+                                        <input type="email" value="admin@belezaestilo.com" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Nome do Responsável</label>
+                                        <input type="text" value="Maria Santos" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Nova Senha</label>
+                                    <input type="password" placeholder="Deixe em branco para manter a atual" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Confirmar Nova Senha</label>
+                                    <input type="password" placeholder="Confirme a nova senha" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+
+                                <div class="pt-4 border-t border-gray-200">
+                                    <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                                        Atualizar Conta
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Controls -->
+        <div class="fixed bottom-6 right-6 flex space-x-2">
+            <button id="prevScreen" class="bg-white shadow-lg border border-gray-200 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-50 font-medium">
+                ← Anterior
+            </button>
+            <button id="nextScreen" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium shadow-lg">
+                Próxima →
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Screen management
+        let currentScreenIndex = 1;
+        const totalScreens = 6;
+        
+        const screenNames = {
+            1: "Tela 1: Página Pública",
+            2: "Tela 2: Login/Cadastro",
+            3: "Tela 3: Dashboard",
+            4: "Tela 4: Agenda",
+            5: "Tela 5: Assinatura",
+            6: "Tela 6: Configurações"
+        };
+
+        function showScreen(screenNumber) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.add('hidden');
+            });
+            
+            // Show selected screen
+            document.getElementById(`screen${screenNumber}`).classList.remove('hidden');
+            
+            // Update indicator
+            document.getElementById('screenIndicator').textContent = screenNames[screenNumber];
+            
+            currentScreenIndex = screenNumber;
+            
+            // Update navigation buttons
+            document.getElementById('prevScreen').disabled = currentScreenIndex === 1;
+            document.getElementById('nextScreen').disabled = currentScreenIndex === totalScreens;
+        }
+
+        // Navigation event listeners
+        document.getElementById('prevScreen').addEventListener('click', () => {
+            if (currentScreenIndex > 1) {
+                showScreen(currentScreenIndex - 1);
+            }
+        });
+
+        document.getElementById('nextScreen').addEventListener('click', () => {
+            if (currentScreenIndex < totalScreens) {
+                showScreen(currentScreenIndex + 1);
+            }
+        });
+
+        // Screen-specific navigation
+        document.getElementById('loginBtn').addEventListener('click', () => showScreen(2));
+        document.getElementById('backToPublic').addEventListener('click', () => showScreen(1));
+        
+        // Login/Register form handling
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            showScreen(3);
+        });
+        
+        document.getElementById('registerForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            showScreen(5); // Vai direto para tela de assinatura após cadastro
+        });
+
+        // Login/Register tabs
+        document.getElementById('loginTab').addEventListener('click', () => {
+            document.getElementById('loginTab').classList.add('bg-white', 'text-gray-900', 'shadow-sm');
+            document.getElementById('loginTab').classList.remove('text-gray-500');
+            document.getElementById('registerTab').classList.remove('bg-white', 'text-gray-900', 'shadow-sm');
+            document.getElementById('registerTab').classList.add('text-gray-500');
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+        });
+
+        document.getElementById('registerTab').addEventListener('click', () => {
+            document.getElementById('registerTab').classList.add('bg-white', 'text-gray-900', 'shadow-sm');
+            document.getElementById('registerTab').classList.remove('text-gray-500');
+            document.getElementById('loginTab').classList.remove('bg-white', 'text-gray-900', 'shadow-sm');
+            document.getElementById('loginTab').classList.add('text-gray-500');
+            document.getElementById('registerForm').classList.remove('hidden');
+            document.getElementById('loginForm').classList.add('hidden');
+        });
+
+        // Dashboard navigation
+        document.getElementById('dashboardNav').addEventListener('click', (e) => {
+            e.preventDefault();
+            showScreen(3);
+        });
+        
+        document.getElementById('scheduleNav').addEventListener('click', (e) => {
+            e.preventDefault();
+            showScreen(4);
+        });
+        
+        document.getElementById('subscriptionNav').addEventListener('click', (e) => {
+            e.preventDefault();
+            showScreen(5);
+        });
+        
+        document.getElementById('settingsNav').addEventListener('click', (e) => {
+            e.preventDefault();
+            showScreen(6);
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => showScreen(1));
+
+        // Service selection
+        let selectedService = null;
+        let selectedDate = null;
+        let selectedTime = null;
+
+        document.querySelectorAll('.service-card').forEach(card => {
+            card.addEventListener('click', () => {
+                // Remove previous selection
+                document.querySelectorAll('.service-card').forEach(c => {
+                    c.classList.remove('ring-2', 'ring-blue-500', 'bg-blue-50');
+                });
+                
+                // Add selection to clicked card
+                card.classList.add('ring-2', 'ring-blue-500', 'bg-blue-50');
+                
+                // Store selected service
+                selectedService = {
+                    name: card.dataset.service,
+                    duration: card.dataset.duration,
+                    price: card.dataset.price
+                };
+                
+                // Show selected service
+                document.getElementById('selectedService').classList.remove('hidden');
+                document.getElementById('selectedServiceName').textContent = selectedService.name;
+                document.getElementById('selectedServiceDetails').textContent = `${selectedService.duration} • ${selectedService.price}`;
+                
+                updateBookingButton();
+            });
+        });
+
+        document.getElementById('changeService').addEventListener('click', () => {
+            document.querySelectorAll('.service-card').forEach(c => {
+                c.classList.remove('ring-2', 'ring-blue-500', 'bg-blue-50');
+            });
+            document.getElementById('selectedService').classList.add('hidden');
+            selectedService = null;
+            updateBookingButton();
+        });
+
+        // Calendar generation
+        function generateCalendar() {
+            const calendar = document.getElementById('calendar');
+            const today = new Date();
+            const currentMonth = today.getMonth();
+            const currentYear = today.getFullYear();
+            
+            // Get first day of month and number of days
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            
+            calendar.innerHTML = '';
+            
+            // Add empty cells for days before month starts
+            for (let i = 0; i < firstDay; i++) {
+                const emptyDay = document.createElement('div');
+                calendar.appendChild(emptyDay);
+            }
+            
+            // Add days of month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'text-center py-2 text-sm cursor-pointer rounded-lg hover:bg-blue-50';
+                dayElement.textContent = day;
+                
+                // Highlight today
+                if (day === today.getDate()) {
+                    dayElement.classList.add('bg-blue-600', 'text-white', 'hover:bg-blue-700');
+                }
+                
+                // Make future dates selectable
+                if (day >= today.getDate()) {
+                    dayElement.addEventListener('click', () => {
+                        // Remove previous selection
+                        document.querySelectorAll('#calendar div').forEach(d => {
+                            d.classList.remove('ring-2', 'ring-blue-500');
+                        });
+                        
+                        // Add selection
+                        dayElement.classList.add('ring-2', 'ring-blue-500');
+                        selectedDate = `${day}/${currentMonth + 1}/${currentYear}`;
+                        
+                        // Show time slots
+                        showTimeSlots();
+                        updateBookingButton();
+                    });
+                } else {
+                    dayElement.classList.add('text-gray-300', 'cursor-not-allowed');
+                }
+                
+                calendar.appendChild(dayElement);
+            }
+        }
+
+        function showTimeSlots() {
+            const timeSlots = document.getElementById('timeSlots');
+            const timeGrid = document.getElementById('timeGrid');
+            
+            timeSlots.style.display = 'block';
+            
+            const availableTimes = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00'];
+            
+            timeGrid.innerHTML = '';
+            
+            availableTimes.forEach(time => {
+                const timeButton = document.createElement('button');
+                timeButton.type = 'button';
+                timeButton.className = 'py-2 px-3 text-sm border border-gray-300 rounded-lg hover:bg-blue-50 hover:border-blue-300 focus:ring-2 focus:ring-blue-500';
+                timeButton.textContent = time;
+                
+                timeButton.addEventListener('click', () => {
+                    // Remove previous selection
+                    document.querySelectorAll('#timeGrid button').forEach(b => {
+                        b.classList.remove('bg-blue-600', 'text-white', 'border-blue-600');
+                        b.classList.add('border-gray-300');
+                    });
+                    
+                    // Add selection
+                    timeButton.classList.add('bg-blue-600', 'text-white', 'border-blue-600');
+                    timeButton.classList.remove('border-gray-300');
+                    selectedTime = time;
+                    
+                    updateBookingButton();
+                });
+                
+                timeGrid.appendChild(timeButton);
+            });
+        }
+
+        function updateBookingButton() {
+            const button = document.getElementById('confirmBooking');
+            if (selectedService && selectedDate && selectedTime) {
+                button.disabled = false;
+                button.textContent = 'Confirmar Agendamento';
+            } else {
+                button.disabled = true;
+                button.textContent = 'Selecione serviço, data e horário';
+            }
+        }
+
+        // Booking form submission
+        document.getElementById('bookingForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('clientName').value;
+            const email = document.getElementById('clientEmail').value;
+            const phone = document.getElementById('clientPhone').value;
+            
+            if (selectedService && selectedDate && selectedTime && name && email && phone) {
+                // Show confirmation modal
+                showBookingConfirmation(name, email, phone);
+            }
+        });
+
+        function showBookingConfirmation(name, email, phone) {
+            // Create modal
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl p-8 max-w-md mx-4 shadow-2xl">
+                    <div class="text-center mb-6">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-green-600 text-2xl">✓</span>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-900 mb-2">Agendamento Confirmado!</h2>
+                        <p class="text-gray-600">Seu horário foi reservado com sucesso</p>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-lg p-4 mb-6 space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Serviço:</span>
+                            <span class="font-medium">${selectedService.name}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Data:</span>
+                            <span class="font-medium">${selectedDate}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Horário:</span>
+                            <span class="font-medium">${selectedTime}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Preço:</span>
+                            <span class="font-medium">${selectedService.price}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Cliente:</span>
+                            <span class="font-medium">${name}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                        <h3 class="font-semibold text-blue-900 mb-2">💳 Pagamento</h3>
+                        <p class="text-blue-700 text-sm mb-3">
+                            Para confirmar definitivamente seu agendamento, envie o comprovante de pagamento via WhatsApp.
+                        </p>
+                        <div class="text-xs text-blue-600 space-y-1">
+                            <div><strong>PIX:</strong> contato@belezaestilo.com</div>
+                            <div><strong>Valor:</strong> ${selectedService.price}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <button id="sendPaymentWhatsApp" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2">
+                            <span>📱</span>
+                            <span>Enviar Comprovante via WhatsApp</span>
+                        </button>
+                        
+                        <button id="closeModal" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors">
+                            Fechar
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // WhatsApp button functionality
+            modal.querySelector('#sendPaymentWhatsApp').addEventListener('click', () => {
+                const message = encodeURIComponent(`Olá! Acabei de fazer um agendamento e gostaria de enviar o comprovante de pagamento.
+
+📅 *Detalhes do Agendamento:*
+• Serviço: ${selectedService.name}
+• Data: ${selectedDate}
+• Horário: ${selectedTime}
+• Valor: ${selectedService.price}
+• Cliente: ${name}
+• Telefone: ${phone}
+
+Segue o comprovante de pagamento em anexo.`);
+                const whatsappUrl = `https://wa.me/5511999999999?text=${message}`;
+                window.open(whatsappUrl, '_blank');
+            });
+            
+            // Close modal functionality
+            modal.querySelector('#closeModal').addEventListener('click', () => {
+                document.body.removeChild(modal);
+                resetBookingForm();
+            });
+            
+            // Close on backdrop click
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
+                    resetBookingForm();
+                }
+            });
+        }
+
+        function resetBookingForm() {
+            // Reset form
+            document.getElementById('bookingForm').reset();
+            document.querySelectorAll('.service-card').forEach(c => {
+                c.classList.remove('ring-2', 'ring-blue-500', 'bg-blue-50');
+            });
+            document.getElementById('selectedService').classList.add('hidden');
+            document.getElementById('timeSlots').style.display = 'none';
+            selectedService = null;
+            selectedDate = null;
+            selectedTime = null;
+            updateBookingButton();
+        }
+
+        // WhatsApp button functionality
+        document.getElementById('sendWhatsApp').addEventListener('click', () => {
+            const message = encodeURIComponent('Olá! Gostaria de enviar o comprovante de pagamento da assinatura do AgendaFácil. Empresa: Salão Beleza & Estilo');
+            const whatsappUrl = `https://wa.me/5511999999999?text=${message}`;
+            window.open(whatsappUrl, '_blank');
+        });
+
+        // Settings form submissions
+        document.getElementById('companyForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Informações da empresa salvas com sucesso!');
+        });
+
+        document.getElementById('hoursForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Horários de funcionamento salvos com sucesso!');
+        });
+
+        document.getElementById('bookingSettingsForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Configurações de agendamento salvas com sucesso!');
+        });
+
+        document.getElementById('accountForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Configurações da conta atualizadas com sucesso!');
+        });
+
+        // Add service functionality
+        document.getElementById('addServiceBtn').addEventListener('click', () => {
+            const servicesList = document.getElementById('servicesList');
+            const newService = document.createElement('div');
+            newService.className = 'flex items-center justify-between p-4 border border-gray-200 rounded-lg';
+            newService.innerHTML = `
+                <div class="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <input type="text" placeholder="Nome do serviço" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <input type="text" placeholder="Duração (ex: 30 min)" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <input type="text" placeholder="Preço (ex: R$ 50)" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <input type="text" placeholder="Descrição do serviço" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <button class="ml-4 text-red-600 hover:text-red-700 p-2 remove-service">🗑️</button>
+            `;
+            servicesList.appendChild(newService);
+            
+            // Add remove functionality to new service
+            newService.querySelector('.remove-service').addEventListener('click', () => {
+                newService.remove();
+            });
+        });
+
+        // Remove service functionality for existing services
+        document.querySelectorAll('.ml-4.text-red-600').forEach(button => {
+            button.addEventListener('click', (e) => {
+                if (confirm('Tem certeza que deseja remover este serviço?')) {
+                    e.target.closest('.flex.items-center.justify-between').remove();
+                }
+            });
+        });
+
+        // Initialize calendar
+        generateCalendar();
+        
+        // Initialize first screen
+        showScreen(1); // Start on public booking page
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97220020f2e872f1',t:'MTc1NTY5NDA2MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
